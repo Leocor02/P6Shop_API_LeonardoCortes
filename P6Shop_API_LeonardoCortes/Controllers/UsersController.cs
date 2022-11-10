@@ -17,9 +17,12 @@ namespace P6Shop_API_LeonardoCortes.Controllers
     {
         private readonly P6SHOPPINGContext _context;
 
+        public Tools.Crypto MyCrypto { get; set; }
+
         public UsersController(P6SHOPPINGContext context)
         {
             _context = context;
+            MyCrypto = new Tools.Crypto();
         }
 
         // GET: api/Users
@@ -34,6 +37,23 @@ namespace P6Shop_API_LeonardoCortes.Controllers
         public async Task<ActionResult<User>> GetUser(int id)
         {
             var user = await _context.Users.FindAsync(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return user;
+        }
+
+        // GET: api/Users/ValidateLogin?UserName=adf&UserPassword=123
+        [HttpGet("ValidateLogin")]
+        public async Task<ActionResult<User>> ValidateLogin(string UserName, string UserPassword)
+        {
+            string ApiLevelEncryptedPassword = MyCrypto.EncriptarEnUnSentido(UserPassword);
+
+            var user = await _context.Users.SingleOrDefaultAsync(e => e.Email == UserName &&
+            e.UserPassword == ApiLevelEncryptedPassword);
 
             if (user == null)
             {
@@ -79,6 +99,10 @@ namespace P6Shop_API_LeonardoCortes.Controllers
         [HttpPost]
         public async Task<ActionResult<User>> PostUser(User user)
         {
+            string ApiLevelEncryptedPass = MyCrypto.EncriptarEnUnSentido(user.UserPassword);
+
+            user.UserPassword = ApiLevelEncryptedPass;
+
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
