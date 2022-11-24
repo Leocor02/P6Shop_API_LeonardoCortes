@@ -7,12 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using P6Shop_API_LeonardoCortes.Attributes;
 using P6Shop_API_LeonardoCortes.Models;
+using P6Shop_API_LeonardoCortes.Models.DTOs;
 
 namespace P6Shop_API_LeonardoCortes.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [ApiKey]
+    //[ApiKey]
     public class UsersController : ControllerBase
     {
         private readonly P6SHOPPINGContext _context;
@@ -32,18 +33,54 @@ namespace P6Shop_API_LeonardoCortes.Controllers
             return await _context.Users.ToListAsync();
         }
 
-        // GET: api/Users/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        // GET: api/Users/GetUserInfo?email=luis%40gmail.com
+        [HttpGet("GetUserInfo")]
+        public ActionResult<IEnumerable<UserDTO>> GetUserInfo(string email)
         {
-            var user = await _context.Users.FindAsync(id);
+            //las consultas linq se parecen mucho a las que normales que hemos hecho en T-SQL
+            //una de las diferencias es que podemos usar una "tabla temporal" para almacenar
+            //los resultados y luego usarla para llenar los atributos de un modelo DTO
+            var query = (from u in _context.Users
+                         join r in _context.UserRoles on u.IduserRole equals r.IduserRole
+                         join c in _context.Countries on u.Idcountry equals c.Idcountry
+                         where u.Email == email && u.Active == true
+                         select new
+                         {idusuario = u.Iduser,
+                          nombre = u.Name,
+                          email = u.Email,
+                          correorespaldo = u.BackUpEmail,
+                          telefono = u.PhoneNumber,
+                          idrol = r.IduserRole,
+                          idpais = c.Idcountry,
+                          roldesc = r.UserRoleDescription,
+                          pais = c.CountryName
+                         }).ToList();
 
-            if (user == null)
+            List<UserDTO> list = new List<UserDTO>();
+
+            foreach (var item in query)
+            {
+                UserDTO NewItem = new UserDTO();
+
+                NewItem.IDUsuario = item.idusuario;
+                NewItem.Nombre = item.nombre;
+                NewItem.CorreoElectronico = item.email;
+                NewItem.CorreoRespaldo = item.correorespaldo;
+                NewItem.NumeroTelefono = item.telefono;
+                NewItem.IDRol = item.idrol;
+                NewItem.IDPais = item.idpais;
+                NewItem.RolDescripcion = item.roldesc;
+                NewItem.PaisNombre = item.pais;
+
+                list.Add(NewItem);
+            }
+            
+            if (list == null)
             {
                 return NotFound();
             }
 
-            return user;
+            return list;
         }
 
         // GET: api/Users/ValidateLogin?UserName=adf&UserPassword=123
