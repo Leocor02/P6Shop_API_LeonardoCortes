@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using P6Shop_API_LeonardoCortes.Attributes;
 using P6Shop_API_LeonardoCortes.Models;
+using P6Shop_API_LeonardoCortes.Models.DTOs;
 
 namespace P6Shop_API_LeonardoCortes.Controllers
 {
@@ -41,6 +42,57 @@ namespace P6Shop_API_LeonardoCortes.Controllers
             }
 
             return inventory;
+        }
+
+        // Get: api/Inventories/GetItemList
+        [HttpGet("GetItemList")]
+        public ActionResult<IEnumerable<ItemDTO>> GetItemList()
+        {
+            var query = from i in _context.Inventories
+                        where i.Active == true
+                        select new
+                        {
+                            ID = i.Idinventory,
+                            Name = i.ItemName,
+                            Description = i.ItemDescription,
+                            MainImageURL = i.ItemImageUrl,
+                            Price = i.ItemPrice,
+                            Stock = i.ItemStock,
+                            SKU = i.ItemSku,
+                            ManufacturerNumber = i.ItemManufacturerNumber,
+                            UPC = i.ItemUpc,
+                            IDCurrency = i.Idcurrency,
+                            IDStore = i.Idstore
+                        };
+
+            List < ItemDTO > inventoryList = new List<ItemDTO>();
+            
+            foreach (var item in query)
+            {
+                inventoryList.Add(
+                    new ItemDTO
+                    {
+                        ID = item.ID,
+                        Name = item.Name,
+                        Description = item.Description,
+                        MainImageURL = item.MainImageURL,
+                        Price = item.Price,
+                        Stock = item.Stock,
+                        SKU = item.SKU, 
+                        ManufacturerNumber = item.ManufacturerNumber,
+                        UPC = item.UPC,
+                        IDCurrency = item.IDCurrency,
+                        IDStore = item.IDStore
+                    }
+                    );
+            }
+
+            if (inventoryList == null)
+            {
+                return NotFound();
+            }
+
+            return inventoryList;
         }
 
         // PUT: api/Inventories/5

@@ -23,7 +23,6 @@ namespace P6Shop_API_LeonardoCortes.Models
         public bool? Active { get; set; }
         public int Idstore { get; set; }
         public int Idcurrency { get; set; }
-        public int? IditemPicture { get; set; }
 
         public virtual Currency IdcurrencyNavigation { get; set; } = null!;
         public virtual Store IdstoreNavigation { get; set; } = null!;

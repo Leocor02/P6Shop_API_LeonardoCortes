@@ -22,8 +22,8 @@ namespace P6Shop_API_LeonardoCortes.Models
         public int IduserRole { get; set; }
         public int Idcountry { get; set; }
 
-        public virtual Country? IdcountryNavigation { get; set; } = null!;
-        public virtual UserRole? IduserRoleNavigation { get; set; } = null!;
+        public virtual Country IdcountryNavigation { get; set; } = null!;
+        public virtual UserRole IduserRoleNavigation { get; set; } = null!;
         public virtual ICollection<Invoice> Invoices { get; set; }
         public virtual ICollection<UserStore> UserStores { get; set; }
     }

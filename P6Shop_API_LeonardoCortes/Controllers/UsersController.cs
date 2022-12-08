@@ -45,7 +45,8 @@ namespace P6Shop_API_LeonardoCortes.Controllers
                          join c in _context.Countries on u.Idcountry equals c.Idcountry
                          where u.Email == email && u.Active == true
                          select new
-                         {idusuario = u.Iduser,
+                         {
+                          idusuario = u.Iduser,
                           nombre = u.Name,
                           email = u.Email,
                           correorespaldo = u.BackUpEmail,
