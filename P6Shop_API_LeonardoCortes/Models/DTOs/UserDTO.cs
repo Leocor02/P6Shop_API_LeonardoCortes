@@ -9,8 +9,9 @@
         //no entiendan la estructura de los models en el API.
         //2. Simplificar objetos muy complejos, ya que es más rápido paras la mínima data
         //requerida por los objetos json entre el app y el api.
-        //3. Si es necesario volver a generar los modelos con el scaffold -f (porque hubi un
-        //cambio en la estructura de una tabla)
+        //3. Si es necesario volver a generar los modelos con el scaffold -f (porque hubo un
+        //cambio en la estructura de una tabla por ejemplo) no es necesario camviar nada en el controller
+        //si la estructura del modelo cambió y además habíamos hecho cambios en el modelo generado automáticamente
 
         //Nota: para efectos de ejemplificar el uso del DTO, voy a manejar los nombres
         //de propiedades en español.
